@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: supersecureapp
+spec:
+  type: NodePort
+  selector:
+    app: supersecureapp
+  ports:
+  - protocol: TCP
+    port: 8080
+    nodePort: 30002
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: supersecureapp
+  labels:
+    app: supersecureapp
+spec:
+  selector:
+    matchLabels:
+      app: supersecureapp
+  template:
+    metadata:
+      labels:
+        app: supersecureapp
+    spec:
+      volumes:
+        - name: ca
+          configMap:
+            name: kubecrash
+            defaultMode: 0444
+      containers:
+        - name: supersecureapp
+          image: kubecrash
+          imagePullPolicy: IfNotPresent
+

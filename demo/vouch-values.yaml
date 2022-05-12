@@ -1,0 +1,17 @@
+---
+config:
+  vouch:
+    allowAllUsers: true
+    jwt:
+      secret: asdf
+    cookie:
+      secure: false
+  oauth:
+    scopes: [openid, email, profile]
+    provider: oidc
+    client_id: oidcproxy
+    client_secret: ZXhhbXBsZS1hcHAtc2VjcmV0
+    auth_url: http://dex.default.svc.cluster.local:30000/dex/auth
+    token_url: http://dex.default.svc.cluster.local:30000/dex/token
+    user_info_url: http://dex.default.svc.cluster.local:30000/dex/userinfo
+    preferredDomain: localhost

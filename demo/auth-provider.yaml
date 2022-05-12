@@ -1,0 +1,88 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: glauth-config
+data:
+  config.cfg: |
+    debug = true
+    [ldap]
+      enabled = true
+      # run on a non privileged port
+      listen = "0.0.0.0:3893"
+    
+    [ldaps]
+      enabled = false
+    
+    [backend]
+      datastore = "config"
+      baseDN = "dc=jetstack,dc=io"
+    
+    [[users]]
+      name = "admin"
+      givenname="Administrator"
+      mail="admin@jetstack.io"
+      sn="Account"
+      uidnumber = 2000
+      primarygroup = 9001
+      passsha256 = "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8" # password
+    
+    
+    [[users]]
+      name = "user"
+      givenname="Regular"
+      mail="user@jetstack.io"
+      sn="Account"
+      uidnumber = 3000
+      primarygroup = 9000
+      passsha256 = "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8" # password
+    
+    [[groups]]
+      name = "admins"
+      gidnumber = 9001
+    
+    [[groups]]
+      name = "users"
+      gidnumber = 9000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-provider
+spec:
+  selector:
+    app: auth-provider
+  ports:
+  - port: 3893
+    targetPort: ldap
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-provider
+spec:
+  selector:
+    matchLabels:
+      app: auth-provider
+  template:
+    metadata:
+      labels:
+        app: auth-provider
+    spec:
+      containers:
+      - name: glauth
+        image: glauth/glauth:v2.0.0
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3893
+          name: ldap
+        volumeMounts:
+          - mountPath: /app/config
+            name: glauth-config
+      volumes:
+        - name: glauth-config
+          configMap:
+            name: glauth-config

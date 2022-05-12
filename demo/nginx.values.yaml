@@ -1,0 +1,51 @@
+controller:
+  service:
+    enabled: true
+
+    appProtocol: true
+
+    annotations: {}
+    labels: {}
+
+
+    externalIPs: []
+
+    loadBalancerIP: ""
+    loadBalancerSourceRanges: []
+
+    enableHttp: true
+    enableHttps: true
+    ipFamilyPolicy: "SingleStack"
+    ipFamilies:
+      - IPv4
+
+    ports:
+      http: 80
+      https: 443
+
+    targetPorts:
+      http: http
+      https: https
+
+    type: NodePort
+
+    ## type: NodePort
+    ## nodePorts:
+    ##   http: 32080
+    ##   https: 32443
+    ##   tcp:
+    ##     8080: 32808
+    nodePorts:
+      http: 30001
+      https: 30002
+      tcp: {}
+      udp: {}
+
+    external:
+      enabled: true
+
+    internal:
+      # -- Enables an additional internal load balancer (besides the external one).
+      enabled: false
+      # -- Annotations are mandatory for the load balancer to come up. Varies with the cloud service.
+      annotations: {}
